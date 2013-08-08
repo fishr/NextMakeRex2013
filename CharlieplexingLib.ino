@@ -1,6 +1,8 @@
-#define numPins 5
+const byte btnPins[] = {11,12,13,10};
 
-const byte pinOffset = 2;
+const byte numPins = 5;
+const byte ledPins[numPins] = {2,3,4,5,6};
+const byte* pinOffset = &ledPins[0];  //change this to be the value of a pointer to an array of all the pin numbers, existing code will iterate through, just have to make it dereference
 const byte numLeds = (numPins-1)*numPins;
 const byte numBlocks = (numLeds>>2);//works for 20
 byte ledArray[numBlocks];
@@ -45,16 +47,16 @@ void setPinOff(byte pin){
 }
 
 void setBlock(byte block, byte level){
-  setPinHigh(block+pinOffset);
+  setPinHigh(*(block+pinOffset));
   byte pinSet = 0;
   for(byte i = 0; i<numBlocks; i++){
     if(i==block){  
     }else if(readLed((block*4)+pinSet)<level){
-      setPinOff(i+pinOffset);
+      setPinOff(*(i+pinOffset));
       pinSet++;
     }else{ 
       //Serial.println((block*4)+pinSet, DEC);
-      setPinLow(i+pinOffset);
+      setPinLow(*(i+pinOffset));
       pinSet++;
     }  
   }
@@ -62,7 +64,7 @@ void setBlock(byte block, byte level){
 
 void blankBlock(byte block){
   for(byte i = 0; i<4; i++){
-    setPinOff(i+pinOffset);
+    setPinOff(*(i+pinOffset));
   }
 }
 
@@ -102,7 +104,7 @@ void setup () {
 }
 
 void loop() {
-  if(millis()-lastTime>50){
+  if(millis()-lastTime>20){
     test();
     lastTime = millis();
   }
