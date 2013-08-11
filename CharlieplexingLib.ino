@@ -63,8 +63,8 @@ byte ledArray[numBlocks];
 const byte delayTime = 1;
 
 long lastTime;
-byte testInt = 0;
-int cycleInt = -6;
+byte circleInt = 0;
+int pulseInt = -6;
 
 void setLed(byte ledNum, byte powerLvl){
   byte power = powerLvl<<6;
@@ -147,23 +147,23 @@ void displayOut(){
   blankBlock(numBlocks-1);
 }
 
-void test(){
-  setLed(testInt, 0);
-  setLed(testInt+1, 1);
-  setLed(testInt+2, 3);
-  testInt++;
-  if(testInt==numLeds-2){
-    testInt=0;
+void circle(){
+  setLed(circleInt, 0);
+  setLed(circleInt+1, 1);
+  setLed(circleInt+2, 3);
+  circleInt++;
+  if(circleInt==numLeds-2){
+    circleInt=0;
     setLed(19, 0);
     setLed(18, 0);
   }
 }
 
-void cycle(){
-  setAll(abs(cycleInt)/2);
-  cycleInt++;
-  if(cycleInt>3)
-    cycleInt=-7;
+void pulse(){
+  setAll(abs(pulseInt)/2);
+  pulseInt++;
+  if(pulseInt>3)
+    pulseInt=-7;
 }
 
 void update(){
@@ -186,14 +186,14 @@ void setup () {
 
 void loop() {
   if(readBtn(0)==2){
-    clearAll();
+    clearAll();  //like it says, clears the display but stops trying after 250 ms of the button being pressed
   }else if(readBtn(1)){
-    test();
+    circle();  //leds scroll in a circle as long as the button is pressed.  I didn't handle the edge case for going from the 19th led to the 0th, so it looks wierd there
   }else if(readBtn(2)==1){
-    int rand = random(20);
+    int rand = random(20);  //leds are set once per click (though some are set to off, its not buggy)
     setLed(rand, rand%4); //DOES NOT set to a random brightness, eg. every 4th LED will be off, etc..
   }else if(readBtn(3)==3){
-    cycle();
+    pulse();  //pulses the leds if the button is held down (doesn't work for first 250ms because that is state 2, could just use readBtn()>1
   }
     
   update();
