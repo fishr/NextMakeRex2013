@@ -1,0 +1,32 @@
+#######################################
+# Syntax Coloring Map For Test
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Gamepad	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+readBtn	KEYWORD2
+setLed	KEYWORD2
+readLed	KEYWORD2
+clearAll	KEYWORD2
+setAll	KEYWORD2
+update	KEYWORD2
+start	KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+numLeds LITERAL1
+
