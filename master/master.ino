@@ -54,9 +54,20 @@ int player3 = 0;
 
 //Antonio
 
+int circleInt = 0;
+long time = 1;
+long last_time = 0;
+long max_time = 3251; // max time alloted for selection 
+long rxn_time = 1000; //max time alloted to user to pres sbutton 
+long random_time = random(max_time);
+byte rand_button;
+long press_time = 0;
+byte m_state = 0; //state 0 random flashing //state one one flashing, waiting on user input //state two user presses 
+
 
 
 void setup() {
+  randomSeed(analogRead(A0));
   rex.start();
   //felix
   Fscore = 2;
@@ -524,8 +535,84 @@ void hans(){
 
 //antonio
 
+void circle(){
+   rex.clearAll();
+   rex.setLed(wrap(circleInt), 0);
+   rex.setLed(wrap(circleInt+1), 1);
+   rex.setLed(wrap(circleInt+2), 3);
+   circleInt = wrap(++circleInt);
+}
+
+void pulse(){
+   rex.setAll(abs(pulseInt)/2);
+   pulseInt++;
+   if(pulseInt>3)
+     pulseInt=-7;
+}
+
 void antonio(){
-  
+   time = millis();
+   long update_time = time - last_time;
+   
+   if(m_state == 0){
+     if(update_time < random_time ){
+       circle();
+     } else{
+       rand_button = random(3);
+       rex.clearAll();
+       side_on(rand_button);
+       m_state = 1;
+       last_time = time;
+       random_time = random(max_time);
+     }
+   } else if (m_state == 1){
+     //then you have shined the light at the  m
+     
+     if(update_time <= rxn_time){
+       //still waiting on user
+       if(rex.readBtn(rand_button) == 2){
+         //almost there
+         //correct
+         press_time = update_time;
+         m_state = 2;
+         last_time = time;
+       }
+     } else {
+       //you're too slow
+       rex.clearAll();
+       if((time/200)%2==0)
+         side_on(rand_button);
+       if(update_time >= rxn_time + 1000){
+         m_state = 0;
+         last_time = time;
+       }
+     }
+   } else if (m_state == 2){
+     //pressed on time
+     if(update_time <= 500){
+       pulse();
+     } else if(update_time <= 1750){
+       //display results for one second
+       longToPercent(press_time);
+     } else {
+       m_state = 0;
+       last_time = time;
+     }
+   } else {
+     m_state = 0;
+     last_time = time;
+   }
+   rex.update();
+}
+
+//variables less than 255, try to use byte to save size //read set LED, 4 settings, 0ff to 1-3 brightness //counterclockwise starting from top left (nw) 
+
+void longToPercent(long time_took){
+   rex.clearAll();
+   int percentage = ((int)time_took) / ((int)(((int)rxn_time)/((int)20)));
+   for (int i = 0; i < percentage; i++){
+     rex.setLed(i, 3);
+   }
 }
 
 void loop() {
